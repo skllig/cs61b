@@ -42,14 +42,13 @@ public class NBody {
         }
 
         // print the universe
-        System.out.printf("%d\n", planets.length);
-        System.out.printf("%.2e\n", radius);
+        StdOut.printf("%d\n", planets.length);
+        StdOut.printf("%.2e\n", radius);
         for (int i = 0; i < planets.length; i++) {
             Planet p = planets[i];
-            System.out.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n", p.xxPos, p.yyPos, p.xxVel, p.yyVel, p.mass, p.imgFileName);
+            StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n", p.xxPos, p.yyPos, p.xxVel, p.yyVel, p.mass, p.imgFileName);
         }
-        System.out.println("end");
-        System.exit(0);         // 留坑，不清楚为什么不会自动退出main
+//        System.exit(0);         // 留坑，不清楚为什么不会自动退出main
     }
 
     public static double readRadius (String file_path) {
@@ -61,11 +60,11 @@ public class NBody {
 
     public static Planet[] readPlanets (String file_path) {
         In in = new In(file_path);
-        in.readInt();
+        int num = in.readInt();
         in.readDouble();
 
-        Planet[] planets = new Planet[5];
-        for (int i = 0; i < 5; i++) {
+        Planet[] planets = new Planet[num];
+        for (int i = 0; i < num; i++) {
             double xxPos = in.readDouble();
             double yyPos = in.readDouble();
             double xxVel = in.readDouble();
