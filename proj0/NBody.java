@@ -1,8 +1,4 @@
-import edu.princeton.cs.algs4.StdDraw;
 
-import javax.swing.*;
-
-//import edu.princeton.cs.algs4.In;
 public class NBody {
     /**
      * 酷炫的太阳系运行
@@ -19,7 +15,7 @@ public class NBody {
 
         StdDraw.enableDoubleBuffering();
         StdDraw.setScale(-radius, radius);
-        StdDraw.picture(0, 0, "src/images/starfield.jpg");	// 图片的中心在画布5，5的位置
+        StdDraw.picture(0, 0, "./images/starfield.jpg");	// 图片的中心在画布5，5的位置
         StdDraw.show();
 //        System.out.println("src/images/starfield.jpg");
 
@@ -34,7 +30,7 @@ public class NBody {
                 yForces[i] = p.calcNetForceExertedByY(planets);
             }
             StdDraw.clear();
-            StdDraw.picture(0, 0, "src/images/starfield.jpg");	// 图片的中心在画布5，5的位置
+            StdDraw.picture(0, 0, "./images/starfield.jpg");	// 图片的中心在画布5，5的位置
             for (int i = 0; i < planets.length; i++) {
                 Planet p = planets[i];
                 p.update(dt, xForces[i], yForces[i]);

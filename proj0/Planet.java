@@ -1,4 +1,4 @@
-import edu.princeton.cs.algs4.StdDraw;
+//import edu.princeton.cs.algs4.StdDraw;
 
 public class Planet{
 	public double xxPos;
@@ -94,6 +94,6 @@ public class Planet{
 
 	public void draw() {
 //		System.out.println(this.imgFileName);
-		StdDraw.picture(this.xxPos, this.yyPos, "src/images/" + this.imgFileName);
+		StdDraw.picture(this.xxPos, this.yyPos, "./images/" + this.imgFileName);
 	}
 }
