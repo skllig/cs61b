@@ -82,7 +82,41 @@ public class IntList {
 
     public static IntList dcatenate(IntList A, IntList B) {
         //TODO:  fill in method
-        return null;
+        if (A == null || B == null){
+            return A == null? B: A;
+        }
+        IntList node, prev;
+        node = prev = A;
+        while (node != null){
+            prev = node;
+            node = node.rest;
+        }
+        prev.rest = B;
+        return A;
+    }
+
+    /**
+     * Returns a list consisting of the elements of A followed by the
+     * elements of B in recursion way. May modify items of A. Don't use 'new'.
+     */
+    
+    public static IntList dcatenateRecursive(IntList A, IntList B) {
+        if (A == null || B == null) {
+            return A == null? A: B;
+        }
+        IntList last = getLast(A);
+        last.rest = B;
+        return A;
+    }
+
+    private static IntList getLast(IntList A) {
+        if (A == null) {
+            return null;
+        }
+        if (A != null && A.rest == null) {
+            return A;
+        }
+        return getLast(A.rest);
     }
 
     /**
@@ -91,7 +125,18 @@ public class IntList {
      */
     public static IntList catenate(IntList A, IntList B) {
         //TODO:  fill in method
-        return null;
+        if (A == null || B == null){
+            return A == null? B: A;
+        }
+        IntList dummy = new IntList(0, null);
+        IntList node = dummy;
+        while (A != null) {
+            node.rest = new IntList(A.first, null);
+            node = node.rest;
+            A = A.rest;
+        }
+        node.rest = B;
+        return dummy.rest;
     }
 
 
