@@ -39,7 +39,7 @@ public class ArrayDeque<T> {
         if (first < 0) {
             first = capacity - 1;
         }
-        if (size >= capacity / 2) {
+        if (size > capacity / 2) {
             resize(2);
         }
     }
@@ -66,7 +66,6 @@ public class ArrayDeque<T> {
             System.arraycopy(data, start, newData, 0, capacity - start);
             System.arraycopy(data, 0, newData, capacity - start, end);
         }
-
         data = newData;
         capacity = newCapacity;
         first = capacity - 1;
@@ -84,7 +83,7 @@ public class ArrayDeque<T> {
         if (last == capacity) {
             last = 0;
         }
-        if (size >= capacity / 2) {
+        if (size > capacity / 2) {
             resize(2);
         }
     }
@@ -103,14 +102,6 @@ public class ArrayDeque<T> {
      */
     public int size() {
         return size;
-    }
-
-    /**
-     * Returns capacity of the deque.
-     * @return
-     */
-    public int capacity() {
-        return capacity;
     }
 
     /**
