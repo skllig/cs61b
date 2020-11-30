@@ -3,8 +3,7 @@
  * @param <T>
  * @author skllig
  */
-public class LinkedListDeque<T> {
-
+public class LinkedListDeque<T> implements Deque<T> {
     /**
      * Item that will be stored in deque.
      */
