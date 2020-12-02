@@ -34,7 +34,6 @@ public class TestArrayDequeGold {
                 b = solution.removeLast();
                 message += "removeLast" + "(" + i + ")" + "\n";
             }
-            System.out.println(a + " " + b);
             assertEquals(message, a, b);
         }
     }
