@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 public class IntListTest {
 
@@ -65,6 +66,31 @@ public class IntListTest {
         assertEquals(exp, IntList.catenate(A, B));
         assertEquals(IntList.of(1, 2, 3), A);
     }
+
+    @Test(timeout = 1000)
+    public void testReverse() {
+        IntList A = IntList.of(1, 2, 3, 4);
+        IntList origin = IntList.of(1, 2, 3, 4);
+        IntList expect = IntList.of(4, 3, 2, 1);
+        IntList actual = IntList.reverse(A);
+        IntList nullCase = IntList.reverse(null);
+        assertTrue(actual.equals(expect));
+        assertFalse(A.equals(origin));
+        assertEquals(null, nullCase);
+    }
+
+    @Test
+    public void reverseRecursive() {
+        IntList A = IntList.of(1, 2, 3, 4);
+        IntList origin = IntList.of(1, 2, 3, 4);
+        IntList expect = IntList.of(4, 3, 2, 1);
+        IntList actual = IntList.reverse(A);
+        IntList null_case = IntList.reverseRecursive(null);
+        assertTrue(actual.equals(expect));
+        assertFalse(A.equals(origin));
+        assertEquals(null, null_case);
+    }
+
 
     /** If you're running this from the command line, you'll need
       * to add a main method. See ArithmeticTest.java for an

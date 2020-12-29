@@ -3,7 +3,7 @@
  * @param <T>
  * @author skllig
  */
-public class ArrayDeque<T> {
+public class ArrayDeque<T> implements Deque<T> {
     /**
      * The array in which the elements of the deque are stored.
      */

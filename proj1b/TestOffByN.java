@@ -7,8 +7,11 @@ public class TestOffByN {
     @Test
     public void testequalChars() {
         assertTrue(cc.equalChars('a', 'f'));
+        assertTrue(cc.equalChars('A', 'F'));
         assertTrue(cc.equalChars('f', 'a'));
 
+        assertFalse(cc.equalChars('A', 'f'));
+        assertFalse(cc.equalChars('F', 'a'));
         assertFalse(cc.equalChars('f', 'h'));
 
     }

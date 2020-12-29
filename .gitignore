@@ -1,3 +1,4 @@
+ls
 *
 !*/
 !**.java
@@ -48,3 +49,7 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+disc/
+ex/
+Test.java
+Test.class

@@ -2,6 +2,9 @@
  * @author skillig
  */
 public class Palindrome {
+    public static void main(String[] args) {
+        Deque deque = new LinkedListDeque();
+    }
     /**
      * return a Deque where the characters appear
      * in the same orders as in the String.
@@ -10,7 +13,7 @@ public class Palindrome {
      * in the same orders as in the String
      */
     public Deque<Character> wordToDeque(String word) {
-        LinkedListDeque<Character> que = new LinkedListDeque<Character>();
+        LinkedListDeque<Character> que = new LinkedListDeque<>();
         for (int i = 0; i < word.length(); i++) {
             que.addLast(word.charAt(i));
         }
