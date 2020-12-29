@@ -1,6 +1,7 @@
 package byog.TileEngine;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -21,7 +22,7 @@ import byog.Core.RandomUtils;
  * to make your TETile class mutable, if you prefer.
  */
 
-public class TETile {
+public class TETile implements Serializable {
     private final char character; // Do not rename character or the autograder will break.
     private final Color textColor;
     private final Color backgroundColor;
@@ -155,6 +156,7 @@ public class TETile {
     public static String toString(TETile[][] world) {
         int width = world.length;
         int height = world[0].length;
+        System.out.println("tetile width " + width + " " + height);
         StringBuilder sb = new StringBuilder();
 
         for (int y = height - 1; y >= 0; y -= 1) {
