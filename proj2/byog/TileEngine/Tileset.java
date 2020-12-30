@@ -29,10 +29,9 @@ public class Tileset {
     public static final TETile SAND = new TETile('▒', Color.yellow, Color.black, "sand");
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, Color.black, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree");
-//    public static final TETile ASTERISK = new TETile('❋', new Color(216, 128, 128), Color.darkGray, "open center asterisk");
-    public static final TETile ASTERISK = new TETile('❃', new Color(230,230,250), new Color(47,79,79), "open center asterisk");
-//    public static final TETile DOT = new TETile('·', new Color(0,100,0), Color.black, "floor");
+    public static final TETile ASTERISK = new TETile('❃', new Color(230,230,250), new Color(47,79,79), "wall");
     public static final TETile DOT = new TETile('•', new Color(255,250,240), new Color(13,45,21), "floor");
+    public static final TETile TARGET = new TETile('★', new Color(252,74,26), new Color(74,189,172), "target");
 }
 
 

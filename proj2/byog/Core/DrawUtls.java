@@ -17,11 +17,12 @@ import java.util.Random;
  * @author skllig
  */
 public class DrawUtls {
-    public static final Font bigFont = new Font(Font.SERIF, Font.BOLD, 40);
-    public static final Font midFont = new Font(Font.SERIF, Font.BOLD, 30);
-    public static final Font smallFont = new Font(Font.SERIF, Font.BOLD, 18);
+    public static final Font bigFont = new Font(Font.SERIF, Font.BOLD, 40);     // start page
+    public static final Font midFont = new Font(Font.SERIF, Font.BOLD, 30);     // navigation bar
+    public static final Font smallFont = new Font(Font.SERIF, Font.BOLD, 18);   // for TETile
     public static final Color paleTurquoise3 = new Color(150, 205, 205);
     public static final Color gold = new Color(	255, 215, 0);
+    public static final Color vermillion = new Color(252,74,26);
 
     public static void initialWorldWithoutRenderer(TETile[][] world) {
         for (int r = 0; r < world.length; r++) {
@@ -209,6 +210,7 @@ public class DrawUtls {
 
     /**
      * Return true if the given position has been occupied.
+     * Check the LHS, RHS and the bottom of rtg, skip the top side of rtg.
      * @param world
      * @param rtg
      * @return
@@ -228,6 +230,7 @@ public class DrawUtls {
 
     /**
      * Return true if the given position has been occupied.
+     * Check the LHS, RHS and the top of rtg, skip the bottom side of rtg.
      * @param world
      * @param rtg
      * @return
@@ -247,6 +250,7 @@ public class DrawUtls {
 
     /**
      * Return true if the given position has been occupied.
+     * Check the LHS, the bottom and the top of rtg, skip the top side of RHS.
      * @param world
      * @param rtg
      * @return
@@ -266,6 +270,7 @@ public class DrawUtls {
 
     /**
      * Return true if the given position has been occupied.
+     * Check the RHS and the bottom and the top of rtg, skip the LHS of rtg.
      * @param world
      * @param rtg
      * @return
@@ -360,7 +365,7 @@ public class DrawUtls {
 
         if (verifyRectangle(topNeighbor) && ! isRectangleOverlapSkipTop(world, topNeighbor)) {
             drawRectangle(world, r, topNeighbor, t, fill);
-            rtg.up = true;
+            rtg.up = true;   // the top side of rtg has been occupied
             joinTop(world, r, topNeighbor, rtg, fill);
             return topNeighbor;
         }
@@ -468,7 +473,7 @@ public class DrawUtls {
             int nextH = nextHeight(r, rtg.getHeight());
 //            int x, y;
             switch (side) {
-                case 0:         // top
+                case 0:         // top side is available
                     Rectangle topNeighbor = generateTopNeighbor(world, r, rtg, nextW, nextH, t, fill);
                     if (topNeighbor != null) {
                         newRectangles.add(topNeighbor);
@@ -509,7 +514,7 @@ public class DrawUtls {
         StdDraw.setFont(bigFont);
         StdDraw.setPenColor(paleTurquoise3);
         StdDraw.enableDoubleBuffering();
-        StdDraw.clear(Color.BLACK);
+//        StdDraw.clear(Color.BLACK);
     }
 
     /**

@@ -1,5 +1,7 @@
 package byog.TileEngine;
 
+import byog.Core.DrawUtls;
+import byog.Core.Game;
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.Color;
@@ -93,9 +95,74 @@ public class TERenderer {
                     throw new IllegalArgumentException("Tile at position x=" + x + ", y=" + y
                             + " is null.");
                 }
-                world[x][y].draw(x + xOffset, y + yOffset);
+                world[x][y].draw(x + xOffset, y + yOffset);  // 为什么添加了navigation bar对canvas没有影响？因为x是距离y轴的距离，y是距离x轴的距离
             }
         }
-        StdDraw.show();
+
+        // additional: for navigation bar, at the left hand side of the bar
+//        handleMouseHover(world);
+
+        StdDraw.show();   // 频闪就是这一句的关系 所以如果要设置navigation bar 最好写在这一句
     }
+
+    /**
+     * 需要修改
+     * @param text
+     */
+    public void setNavigationBar(String text, boolean winStatus) {
+        // for navigation bar
+        StdDraw.setFont(DrawUtls.midFont);
+        if (winStatus == false) {
+            StdDraw.setPenColor(DrawUtls.paleTurquoise3);
+            StdDraw.textLeft(0.1, Game.HEIGHT + 0.8, text);
+            StdDraw.line(0, Game.HEIGHT, Game.WIDTH, Game.HEIGHT);
+        } else {
+            StdDraw.setPenColor(new Color(13,45,21));
+            StdDraw.filledRectangle(Game.WIDTH / 2, Game.HEIGHT + 0.9, Game.WIDTH / 2, 1.2);
+            StdDraw.setPenColor(DrawUtls.vermillion);
+            StdDraw.text(Game.WIDTH / 2, Game.HEIGHT + 0.8, text);
+        }
+        // fall back font (midFont is for navigation bar, smallFont is for TETile)
+        StdDraw.setFont(DrawUtls.smallFont);
+    }
+
+    private void handleMouseHover(TETile[][] world) {
+        int x = (int) StdDraw.mouseX();
+        int y = (int) StdDraw.mouseY();
+        try {
+            String tileDescription = world[x][y].description();
+            setNavigationBar(tileDescription, false);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("TERenderer.java Mouse out of scope.");
+        }
+    }
+
+    /**
+     * Remain the original renderFrame() method unchanged. Overload a customized one.
+     *
+     */
+    public void renderFrame(TETile[][] world, String victoryText) {
+        int numXTiles = world.length;
+        int numYTiles = world[0].length;
+        StdDraw.clear(new Color(0, 0, 0));
+        for (int x = 0; x < numXTiles; x += 1) {
+            for (int y = 0; y < numYTiles; y += 1) {
+                if (world[x][y] == null) {
+                    throw new IllegalArgumentException("Tile at position x=" + x + ", y=" + y
+                            + " is null.");
+                }
+                world[x][y].draw(x + xOffset, y + yOffset);  // 为什么添加了navigation bar对canvas没有影响？因为x是距离y轴的距离，y是距离x轴的距离
+            }
+        }
+
+        if (victoryText.length() == 0) {
+            // additional: for navigation bar, at the left hand side of the bar
+            handleMouseHover(world);
+        } else {
+            setNavigationBar(victoryText, true);
+        }
+
+        StdDraw.show();   // 频闪就是这一句的关系 所以如果要设置navigation bar 最好写在这一句
+    }
+
 }

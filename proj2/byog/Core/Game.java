@@ -20,27 +20,32 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
-    private static final boolean ALIVE = true;
+    public static final int NAVIGATION_HEIGHT = 2;  // 顶部的navigation bar
+    private static boolean ALIVE = true;
+    private static String fileName = "canvas.txt";  // 需要keep以前版本吗？
     private static Player player;
     private static TETile[][] worldState;
-    private static String fileName = "canvas.txt";  // 需要keep以前版本吗？
+    private static int targetX, targetY;            // x, y coordinate of the target
+    private static String VICTORY = "Well done! You win the game!";
 
     /**
      * Handle action keys press (arrows).
      */
     private void handleKeyPress() {
+        // set font control all tiles (except the start page)
+        // StdDraw.setFont(DrawUtls.smallFont);
         if (StdDraw.isKeyPressed(37)) {
             player.moveLeft(worldState, Tileset.DOT);
-            StdDraw.pause(200);
+            StdDraw.pause(80);
         } else if (StdDraw.isKeyPressed(38)) {
             player.moveUp(worldState, Tileset.DOT);
-            StdDraw.pause(200);
+            StdDraw.pause(80);
         } else if (StdDraw.isKeyPressed(39)) {
             player.moveRight(worldState, Tileset.DOT);
-            StdDraw.pause(200);
+            StdDraw.pause(80);
         } else if (StdDraw.isKeyPressed(40)) {
             player.moveDown(worldState, Tileset.DOT);
-            StdDraw.pause(200);
+            StdDraw.pause(80);
         }
     }
 
@@ -54,6 +59,9 @@ public class Game {
      */
     private void handleKeyType() {
         if (StdDraw.hasNextKeyTyped()) {
+            // set font control all tiles (except the start page)
+            // StdDraw.setFont(DrawUtls.smallFont);
+
             // a: left d: right w: up s: down
             char key = StdDraw.nextKeyTyped();
             if (key == 'a' || key == 'A') {
@@ -72,6 +80,22 @@ public class Game {
                 System.exit(0);
             }
         }
+    }
+
+    /**
+     * Return true if player hit the target, false otherwise.
+     * @return  true if player hit the target, false otherwise
+     */
+    private boolean playerHitTarget() {
+        boolean hit = false;
+        if (player.getX() == targetX && Math.abs(player.getY() - targetY) == 1) {
+            System.out.println(player + " " + "target x: " + targetX + " target y: " + targetY );
+            hit = true;
+        } else if (player.getY() == targetY && Math.abs(player.getX() - targetX) == 1) {
+            System.out.println(player + " " + "target x: " + targetX + " target y: " + targetY );
+            hit = true;
+        }
+        return hit;
     }
 
     /**
@@ -211,9 +235,49 @@ public class Game {
     }
 
     /**
+     * Generate and draw a open door as target in the last rectangle.
+     * Check the free sides of the last rectangle and randomly pick one.
+     * @param world     canvas
+     * @param last      the last rectangle
+     * @param r         pseudorandom generator
+     * @param door      tile type of the door
+     * @return
+     */
+    private void generateTarget(TETile[][] world, Rectangle last, Random r, TETile door) {
+        List<Integer> sideUsage = last.checkSidesUsage();
+        if (sideUsage.size() != 0) {
+            int side = RandomUtils.uniform(r, 0, sideUsage.size());
+            int x = 0, y = 0;
+            switch (side) {
+                case 0: // top
+                    x = RandomUtils.uniform(r, last.leftUp.x + 1, last.rightUp.x);
+                    y = last.leftUp.y;
+                    break;
+                case 1: // right
+                    x = last.rightUp.x;
+                    y = RandomUtils.uniform(r, last.rightDown.y + 1, last.rightUp.y);
+                    break;
+                case 2: // bottom
+                    x = RandomUtils.uniform(r, last.leftDown.x + 1, last.rightDown.x);
+                    y = last.leftDown.y;
+                    break;
+                case 3:
+                    x = last.leftUp.x;
+                    y = RandomUtils.uniform(r, last.leftDown.y + 1, last.leftUp.y);
+            }
+            world[x][y] = door;
+            targetX = x;
+            targetY = y;
+            System.out.println("target X: " + targetX + " targetY: " + targetY);
+        }
+    }
+
+    /**
      * Generate some connected rectangles base on the starter rectangle.
-     * Target to generate 20 rectangles base on the starter. If there is space to generate neighbors
-     * but couldn't generate any this time, retry a few times.
+     * Target to generate 20 rectangles base on the starter. If there are available side to generate neighbors
+     * but couldn't generate any this time, retry a few times according to the number of existing rectangles.
+     * Generate a locked door in the last rectangle.
+     *
      * @param world     canvas
      * @param r         pseudorandom generator
      * @param starter   starter rectangle
@@ -222,11 +286,14 @@ public class Game {
         // que for generating rectangle
         Deque<Rectangle> que = new ArrayDeque<>();
         que.addLast(starter);
-        int count = 1;
+        int count = 1;  // count of rectangles
 
         while (!que.isEmpty()) {
             Rectangle current = que.pollFirst();
+            // try to generate neighbors
             List<Rectangle> neighbors = DrawUtls.drawNeighbors(world, r, current, Tileset.ASTERISK, Tileset.DOT);
+
+            // if there are available sides of the current rectangle, but no any neighbor is generated this time, retry.
             int retry = count < 20 ? 5: 3;
             if (neighbors.size() == 0 && current.checkSidesUsage().size() > 0) {
                 for (int i = 0; i < retry; i++ ) {
@@ -236,6 +303,11 @@ public class Game {
                     }
                 }
             }
+            // generate and draw a open door as target in the last rectangle
+            if (que.size() == 0 && neighbors.size() == 0) {
+                generateTarget(world, current, r, Tileset.TARGET);
+            }
+
             for (Rectangle rec : neighbors) {
                 que.addLast(rec);
             }
@@ -333,15 +405,15 @@ public class Game {
     private void generateCanvasAndPlacePlayer(TETile[][] canvas, String input, Random r) {
         // starter rectangle
         Rectangle starter = genStartRectangle(r);
+
         // place player in the starter rectangle and execute pre-defined movements if any
         DrawUtls.drawRectangle(canvas, r, starter, Tileset.ASTERISK, Tileset.DOT);
         player = new Player(r, starter, Tileset.PLAYER);
         player.placePlayer(canvas, starter, r);
         System.out.println("game.java " + player.toString());
 
-        // movements N999SWWWWW
-        String movements = getMovement(input, input.toLowerCase().indexOf("s"));
-//            String movements = getMovement(input, seedString.length() + 2);
+        // pre-defined movements N999SWWWWW
+        String movements = getMovement(input, input.toLowerCase().indexOf("s") + 1);
         System.out.println("game.java movements: " + movements);
 
         // generate other rectangle base on the starter rectangle
@@ -349,9 +421,16 @@ public class Game {
         handPlayerMovement(canvas, movements);
     }
 
-
-    private void handleMouseHovor(TETile[][] canvas) {
-
+    /**
+     * Check if player hits the target. If player does so, stop the game and show victory
+     * in naviagtion bar.
+     */
+    private void checkHitStatus(TETile[][] world) {
+        if (playerHitTarget()) {
+            ter.renderFrame(world, VICTORY);
+            ALIVE = false;
+            System.out.println("Win!!!!!!!!!!");
+        }
     }
 
     /**
@@ -363,11 +442,13 @@ public class Game {
      */
     public void playWithKeyboard() {
         // start page
-        StdDraw.enableDoubleBuffering();
-        DrawUtls.initialStartFrame(WIDTH, HEIGHT);
-        DrawUtls.drawStartFrame(WIDTH, HEIGHT);
+
+        // for navigation bar 顶部留空5个unit
+        DrawUtls.initialStartFrame(WIDTH, HEIGHT + NAVIGATION_HEIGHT);   // NAVIGATION_HEIGHT just to align with canvas page. Aesthetics purpose.\
+        DrawUtls.drawStartFrame(WIDTH, HEIGHT + NAVIGATION_HEIGHT);
+
         // await and get input from user
-        String userInput = DrawUtls.userInput(WIDTH, HEIGHT);
+        String userInput = DrawUtls.userInput(WIDTH, HEIGHT + NAVIGATION_HEIGHT);
 
         // Try to load old canvas. Quit if there is no old canvas but try to load it.
         worldState = load(userInput);
@@ -378,12 +459,10 @@ public class Game {
         }
 
         while (ALIVE) {
-            // clear canvas
-            StdDraw.clear(Color.BLACK);
-            // set font control all tiles (except the start page)
+            // draw canvas. Note: canvas will be clear after renderFrame()  handle navigation bar display
             StdDraw.setFont(DrawUtls.smallFont);
-            // draw canvas
-            ter.renderFrame(worldState);
+
+            ter.renderFrame(worldState, "");
 
             // capture action key stroke
             handleKeyPress();
@@ -391,9 +470,11 @@ public class Game {
             // capture key press
             handleKeyType();
 
-            // handle mouse hovor
-            handleMouseHovor(worldState);
+            // check if player has found the target, show victory info and stop. Will update ALIVE once player hits target.
+            checkHitStatus(worldState);
+
             StdDraw.show();
+            StdDraw.pause(50);
         }
     }
 
@@ -410,7 +491,7 @@ public class Game {
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
      */
-    public TETile[][] playWithInputString(String input) {  // 还要修改 input 带有movement 的话要更新player 的位置 以及是否保存和退出
+    public TETile[][] playWithInputString(String input) {
         // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
@@ -442,7 +523,6 @@ public class Game {
         // save but don't quit in playWithInputString
         System.out.println("Game.java is quit  " + isSaveAndQuit(input));
         if (isSaveAndQuit(input)) {
-            System.out.println("try to save and quit " + finalWorldFrame);
             save(finalWorldFrame);
         }
 //        System.out.println(TETile.toString(finalWorldFrame));
