@@ -95,14 +95,10 @@ public class TERenderer {
                     throw new IllegalArgumentException("Tile at position x=" + x + ", y=" + y
                             + " is null.");
                 }
-                world[x][y].draw(x + xOffset, y + yOffset);  // 为什么添加了navigation bar对canvas没有影响？因为x是距离y轴的距离，y是距离x轴的距离
+                world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
-
-        // additional: for navigation bar, at the left hand side of the bar
-//        handleMouseHover(world);
-
-        StdDraw.show();   // 频闪就是这一句的关系 所以如果要设置navigation bar 最好写在这一句
+        StdDraw.show();
     }
 
     /**
@@ -111,19 +107,19 @@ public class TERenderer {
      */
     public void setNavigationBar(String text, boolean winStatus) {
         // for navigation bar
-        StdDraw.setFont(DrawUtls.midFont);
-        if (winStatus == false) {
-            StdDraw.setPenColor(DrawUtls.paleTurquoise3);
+        StdDraw.setFont(DrawUtls.MID_FONT);
+        if (!winStatus) {
+            StdDraw.setPenColor(DrawUtls.PALE_TURQUOISE_3);
             StdDraw.textLeft(0.1, Game.HEIGHT + 0.8, text);
             StdDraw.line(0, Game.HEIGHT, Game.WIDTH, Game.HEIGHT);
         } else {
-            StdDraw.setPenColor(new Color(13,45,21));
+            StdDraw.setPenColor(new Color(13, 45, 21));
             StdDraw.filledRectangle(Game.WIDTH / 2, Game.HEIGHT + 0.9, Game.WIDTH / 2, 1.2);
-            StdDraw.setPenColor(DrawUtls.vermillion);
+            StdDraw.setPenColor(DrawUtls.VERMILLION);
             StdDraw.text(Game.WIDTH / 2, Game.HEIGHT + 0.8, text);
         }
         // fall back font (midFont is for navigation bar, smallFont is for TETile)
-        StdDraw.setFont(DrawUtls.smallFont);
+        StdDraw.setFont(DrawUtls.SMALL_FONT);
     }
 
     private void handleMouseHover(TETile[][] world) {
@@ -151,7 +147,7 @@ public class TERenderer {
                     throw new IllegalArgumentException("Tile at position x=" + x + ", y=" + y
                             + " is null.");
                 }
-                world[x][y].draw(x + xOffset, y + yOffset);  // 为什么添加了navigation bar对canvas没有影响？因为x是距离y轴的距离，y是距离x轴的距离
+                world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
 
@@ -162,7 +158,7 @@ public class TERenderer {
             setNavigationBar(victoryText, true);
         }
 
-        StdDraw.show();   // 频闪就是这一句的关系 所以如果要设置navigation bar 最好写在这一句
+        StdDraw.show();
     }
 
 }

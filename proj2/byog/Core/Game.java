@@ -4,12 +4,13 @@ import byog.TileEngine.Position;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-import byog.lab5.HexWorld;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -32,8 +33,6 @@ public class Game {
      * Handle action keys press (arrows).
      */
     private void handleKeyPress() {
-        // set font control all tiles (except the start page)
-        // StdDraw.setFont(DrawUtls.smallFont);
         if (StdDraw.isKeyPressed(37)) {
             player.moveLeft(worldState, Tileset.DOT);
             StdDraw.pause(80);
@@ -59,9 +58,6 @@ public class Game {
      */
     private void handleKeyType() {
         if (StdDraw.hasNextKeyTyped()) {
-            // set font control all tiles (except the start page)
-            // StdDraw.setFont(DrawUtls.smallFont);
-
             // a: left d: right w: up s: down
             char key = StdDraw.nextKeyTyped();
             if (key == 'a' || key == 'A') {
@@ -89,10 +85,10 @@ public class Game {
     private boolean playerHitTarget() {
         boolean hit = false;
         if (player.getX() == targetX && Math.abs(player.getY() - targetY) == 1) {
-            System.out.println(player + " " + "target x: " + targetX + " target y: " + targetY );
+            System.out.println(player + " " + "target x: " + targetX + " target y: " + targetY);
             hit = true;
         } else if (player.getY() == targetY && Math.abs(player.getX() - targetX) == 1) {
-            System.out.println(player + " " + "target x: " + targetX + " target y: " + targetY );
+            System.out.println(player + " " + "target x: " + targetX + " target y: " + targetY);
             hit = true;
         }
         return hit;
@@ -120,7 +116,7 @@ public class Game {
      * when user press ":Q" / ":q".
      */
     private void save(TETile[][] canvas) {
-        try (   // 写在() 里的资源，会自动关闭，无需finally
+        try (
                 FileOutputStream file = new FileOutputStream(fileName);
                 ObjectOutputStream out = new ObjectOutputStream(file);
         ) {
@@ -162,7 +158,7 @@ public class Game {
      * @return      old canvas if serialization file exists, null otherwise.
      * @throws IOException
      */
-    private TETile[][] loadCanvas() throws IOException{
+    private TETile[][] loadCanvas() throws IOException {
         TETile[][] canvas = null;
         try (
                 FileInputStream file = new FileInputStream(fileName);
@@ -170,19 +166,18 @@ public class Game {
         ) {
             canvas = (TETile[][]) in.readObject();
             player = (Player) in.readObject();
-            System.out.println("try to load canvas: ");
-            System.out.println(canvas);
         } catch (ClassNotFoundException e) {
-            System.out.println("game.java line 117 IOException");
+            System.out.println("Canvas.txt is not found.");
         }
         return canvas;
     }
 
 
     /***
-     * Return old canvas if there exists an old version canvas can be loaded, null otherwise.
+     * Return old canvas if there exists an old version canvas can be loaded,
+     * null otherwise.
      * If old canvas is loaded successfully, player will be loaded properly.
-     * @return          old canvas if there exists an old version canvas can be loaded, null otherwise.
+     * @return  old canvas if there exists an old version canvas can be loaded, null otherwise.
      */
     private TETile[][] readyToloadCanvas() {
         TETile[][] canvas;
@@ -228,7 +223,6 @@ public class Game {
         int startY = RandomUtils.uniform(r, Math.round(HEIGHT * 2 / 5), Math.round(HEIGHT * 3 / 5));
         int startW = RandomUtils.uniform(r, Math.round(WIDTH / 12), Math.round(WIDTH / 8));
         int startH = RandomUtils.uniform(r, Math.round(HEIGHT / 8), Math.round(HEIGHT / 4));
-        // Rectangle starter = new Rectangle(new Position(10, 15), 10, 5);
         // generate starter rectangle
         Rectangle starter = new Rectangle(new Position(startX, startY), startW, startH);
         return starter;
@@ -268,14 +262,14 @@ public class Game {
             world[x][y] = door;
             targetX = x;
             targetY = y;
-            System.out.println("target X: " + targetX + " targetY: " + targetY);
         }
     }
 
     /**
      * Generate some connected rectangles base on the starter rectangle.
-     * Target to generate 20 rectangles base on the starter. If there are available side to generate neighbors
-     * but couldn't generate any this time, retry a few times according to the number of existing rectangles.
+     * Target to generate 20 rectangles base on the starter. If there are
+     * available side to generate neighbors but couldn't generate any this time,
+     * retry a few times according to the number of existing rectangles.
      * Generate a locked door in the last rectangle.
      *
      * @param world     canvas
@@ -291,13 +285,16 @@ public class Game {
         while (!que.isEmpty()) {
             Rectangle current = que.pollFirst();
             // try to generate neighbors
-            List<Rectangle> neighbors = DrawUtls.drawNeighbors(world, r, current, Tileset.ASTERISK, Tileset.DOT);
+            List<Rectangle> neighbors =
+                    DrawUtls.drawNeighbors(world, r, current, Tileset.ASTERISK, Tileset.DOT);
 
-            // if there are available sides of the current rectangle, but no any neighbor is generated this time, retry.
-            int retry = count < 20 ? 5: 3;
+            // if there are available sides of the current rectangle,
+            // but no any neighbor is generated this time, retry.
+            int retry = count < 20 ? 5 : 3;
             if (neighbors.size() == 0 && current.checkSidesUsage().size() > 0) {
-                for (int i = 0; i < retry; i++ ) {
-                    neighbors = DrawUtls.drawNeighbors(world, r, current, Tileset.ASTERISK, Tileset.DOT);
+                for (int i = 0; i < retry; i++) {
+                    neighbors = DrawUtls.drawNeighbors(
+                            world, r, current, Tileset.ASTERISK, Tileset.DOT);
                     if (neighbors.size() > 0) {
                         break;
                     }
@@ -355,7 +352,7 @@ public class Game {
      */
     private void handPlayerMovement(TETile[][] world, String movements) {
         int cur = 0;
-        while (cur < movements.length()){
+        while (cur < movements.length()) {
 
             if (movements.charAt(cur) == 'a' || movements.charAt(cur) == 'A') {
                 player.moveLeft(world, Tileset.DOT);
@@ -410,11 +407,9 @@ public class Game {
         DrawUtls.drawRectangle(canvas, r, starter, Tileset.ASTERISK, Tileset.DOT);
         player = new Player(r, starter, Tileset.PLAYER);
         player.placePlayer(canvas, starter, r);
-        System.out.println("game.java " + player.toString());
 
         // pre-defined movements N999SWWWWW
         String movements = getMovement(input, input.toLowerCase().indexOf("s") + 1);
-        System.out.println("game.java movements: " + movements);
 
         // generate other rectangle base on the starter rectangle
         genRectangleNeighbors(canvas, r, starter);
@@ -429,7 +424,6 @@ public class Game {
         if (playerHitTarget()) {
             ter.renderFrame(world, VICTORY);
             ALIVE = false;
-            System.out.println("Win!!!!!!!!!!");
         }
     }
 
@@ -442,9 +436,8 @@ public class Game {
      */
     public void playWithKeyboard() {
         // start page
-
-        // for navigation bar 顶部留空5个unit
-        DrawUtls.initialStartFrame(WIDTH, HEIGHT + NAVIGATION_HEIGHT);   // NAVIGATION_HEIGHT just to align with canvas page. Aesthetics purpose.\
+        // NAVIGATION_HEIGHT is used to align with canvas page. Aesthetics purpose.
+        DrawUtls.initialStartFrame(WIDTH, HEIGHT + NAVIGATION_HEIGHT);
         DrawUtls.drawStartFrame(WIDTH, HEIGHT + NAVIGATION_HEIGHT);
 
         // await and get input from user
@@ -459,8 +452,9 @@ public class Game {
         }
 
         while (ALIVE) {
-            // draw canvas. Note: canvas will be clear after renderFrame()  handle navigation bar display
-            StdDraw.setFont(DrawUtls.smallFont);
+            // draw canvas. Note: canvas will be clear after renderFrame()
+            // handle navigation bar display
+            StdDraw.setFont(DrawUtls.SMALL_FONT);
 
             ter.renderFrame(worldState, "");
 
@@ -470,7 +464,8 @@ public class Game {
             // capture key press
             handleKeyType();
 
-            // check if player has found the target, show victory info and stop. Will update ALIVE once player hits target.
+            // check if player has found the target, show victory info and stop.
+            // Will update ALIVE once player hits target.
             checkHitStatus(worldState);
 
             StdDraw.show();
@@ -492,23 +487,21 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
         TETile[][] finalWorldFrame; // 其实可以和playwithkeyboard直接share，但是既然定义在这里了，就用着吧。
 
-        // if user try to load old version canvas, check whether can load the old version one properly?
+        // if user try to load old version canvas,
+        // check whether can load the old version one properly
         finalWorldFrame = load(input);
 
         // load old canvas and handle movements if any
         if (finalWorldFrame != null) {
             // movements, skip 'L' char   LWWWW
             String movements = getMovement(input, 1);
-            System.out.println("game.java movements: " + movements);
             handPlayerMovement(finalWorldFrame, movements);
-        }
-        // generate new canvas and handle movements if any
-        else {
+        } else {
+            // generate new canvas and handle movements if any
             // initial canvas
             finalWorldFrame = new TETile[Game.WIDTH][Game.HEIGHT];
             DrawUtls.initialWorldWithoutRenderer(finalWorldFrame);
@@ -516,17 +509,15 @@ public class Game {
            // pseudorandom generator
             Random r = getPseudorandomGenerator(input);
 
-            // generate canvas and place player in the starter rectangle and execute movements accordingly.
+            // generate canvas and place player in the starter rectangle
+            // and execute movements accordingly.
             generateCanvasAndPlacePlayer(finalWorldFrame, input, r);
         }
 
         // save but don't quit in playWithInputString
-        System.out.println("Game.java is quit  " + isSaveAndQuit(input));
         if (isSaveAndQuit(input)) {
             save(finalWorldFrame);
         }
-//        System.out.println(TETile.toString(finalWorldFrame));
-
         return finalWorldFrame;
     }
 }

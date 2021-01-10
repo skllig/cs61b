@@ -10,8 +10,10 @@ public class Player implements Serializable {
     private TETile sign;
 
     public Player(Random r, Rectangle starter, TETile player) {
-        int playerX = RandomUtils.uniform(r, Math.round(starter.leftUp.x + 1), Math.round(starter.rightUp.x));
-        int playerY = RandomUtils.uniform(r, Math.round(starter.leftDown.y + 1), Math.round(starter.leftUp.y));
+        int playerX = RandomUtils.uniform(
+                r, Math.round(starter.leftUp.x + 1), Math.round(starter.rightUp.x));
+        int playerY = RandomUtils.uniform(
+                r, Math.round(starter.leftDown.y + 1), Math.round(starter.leftUp.y));
         this.x = playerX;
         this.y = playerY;
         this.sign = player;
@@ -29,10 +31,7 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        return "Player{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return "Player{" + "x=" + x + ", y=" + y + '}';
     }
 
     /**
@@ -113,7 +112,7 @@ public class Player implements Serializable {
             worldState[newX][this.y] = this.sign;
             this.x = newX;
         } else {
-            System.out.println("Player.java line 42: Cautions: Hit walls at x: " + newX + " y: " + this.y);
+            System.out.println("Player hit walls at x: " + newX + " y: " + this.y);
         }
     }
 
