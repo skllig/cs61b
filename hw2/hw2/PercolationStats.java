@@ -1,18 +1,13 @@
 package hw2;
 
 import edu.princeton.cs.algs4.StdRandom;
-
-import java.util.LinkedList;
-import java.util.List;
+import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
     private int N, T;
     private PercolationFactory pf;
-    private double probability;
-    private int counter;
-    private int target;
-    private List<Double> samples;
+    private double[] data;
     /**
      * perform T independent experiments on an N-by-N grid
      * @param N     Side length of grid
@@ -26,39 +21,28 @@ public class PercolationStats {
         this.N = N;
         this.T = T;
         this.pf = pf;
-        probability = StdRandom.uniform(0.5, 1.0);
-        counter = 0;
-        target = (int) Math.floor(N * N * probability);
-        samples = new LinkedList<>();
+        data = new double[T];
 
-        testTTimes();
-//        testOnce();
+        test();
     }
 
-    private void testOnce() {
-        int row, col;
-        Percolation canvas = pf.make(N);
-        while (counter < target && !canvas.percolates()) {
-            row = StdRandom.uniform(0, N);
-            col = StdRandom.uniform(0, N);
-            if (!canvas.isOpen(row, col)) {
-                canvas.open(row, col);
-                counter += 1;
-//                System.out.println(row + " " + col);
-            }
-        }
-        if (canvas.percolates()) {
-//            System.out.printf("probability: %s target: %s percolates! \n", probability, target);
-            samples.add(probability);
-        }
-    }
-
-    private void testTTimes() {
+    /**
+     * Perform experiments T times.
+     */
+    private void test() {
         for (int i = 0; i < T; i++) {
-            testOnce();
-            probability = StdRandom.uniform(0.5, 1.0);
-            target = (int) Math.floor(N * N * probability);
-            counter = 0;
+            Percolation canvas = pf.make(N);
+            int totalCount = N * N;
+            int openCount = 0;
+            while (!canvas.percolates()) {
+                int row = StdRandom.uniform(0, N);
+                int col = StdRandom.uniform(0, N);
+                if (!canvas.isOpen(row, col)) {
+                    openCount += 1;
+                    canvas.open(row, col);
+                }
+            }
+            data[i] = (double) openCount / totalCount;
         }
     }
 
@@ -67,14 +51,7 @@ public class PercolationStats {
      * @return
      */
     public double mean() {
-        if (samples.size() == 0) {
-            return 0.0;
-        }
-        double total = 0.0;
-        for (double tmp : samples) {
-            total += tmp;
-        }
-        return total / samples.size();
+        return StdStats.mean(data);
     }
 
     /**
@@ -82,13 +59,7 @@ public class PercolationStats {
      * @return
      */
     public double stddev() {
-        double avg = mean();
-        double sumOfDtSquare = 0.0;
-        for (double tmp : samples) {
-            sumOfDtSquare += Math.pow(tmp - avg, 2);
-        }
-        double variance = sumOfDtSquare / (T - 1);
-        return Math.sqrt(variance);
+        return StdStats.stddev(data);
     }
 
     /**
