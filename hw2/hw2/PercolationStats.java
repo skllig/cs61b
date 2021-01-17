@@ -20,6 +20,9 @@ public class PercolationStats {
      * @param pf    Fatory to create Percolation instance
      */
     public PercolationStats(int N, int T, PercolationFactory pf) {
+        if (N <= 0 || T <= 0) {
+            throw new java.lang.IllegalArgumentException();
+        }
         this.N = N;
         this.T = T;
         this.pf = pf;
