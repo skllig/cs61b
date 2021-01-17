@@ -87,21 +87,19 @@ public class Percolation {
      * @param col
      */
     public void open(int row, int col) {
-        if (isFull(row, col)) {
-            return;
+        if (!isOpen(row, col)) {
+            int idx = getIndex(row, col);
+            sites[idx] = OPEN;
+            openCnt += 1;
+            if (row == 0) {
+                uf.union(idx, ceiling);
+                sites[idx] = FULL;
+            }
+            if (row == N - 1) {
+                uf.union(idx, floor);
+            }
+            unionNeighbors(row, col);
         }
-        int idx = getIndex(row, col);
-        sites[idx] = OPEN;
-        openCnt += 1;
-
-        if (row == 0) {
-            uf.union(idx, ceiling);
-            sites[idx] = FULL;
-        } else if (row == N - 1) {
-            uf.union(idx, floor);
-        }
-
-        unionNeighbors(row, col);
     }
 
     /**
